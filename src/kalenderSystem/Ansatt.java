@@ -1,10 +1,12 @@
 package kalenderSystem;
+
 //Kommentar
 public class Ansatt {
 	
 	String EPOST;
 	String NAVN;
 	Database db;
+
 
 	public Ansatt(String EPOST){
 		this.EPOST = EPOST;
@@ -15,7 +17,5 @@ public class Ansatt {
 	public void byttPassord(String nyttPO){
 		
 	}
-	
-	
 
 }

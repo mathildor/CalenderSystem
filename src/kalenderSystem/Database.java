@@ -4,11 +4,17 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class Database {
-	
+
 	DBConnection db;
+
+	//TODO: hente ut liste over alle navn/brukere/eposter som er med i en avtale. Kall listen for participants. 
+	//TODO lag getParticipants();
 	
 	public Database(){
 		db = new DBConnection();
+	}
+	public ArrayList<String> getParticipants(){
+		return
 	}
 
 	public ArrayList<String> getEposter() {
@@ -24,7 +30,7 @@ public class Database {
 		}
 		return EPOSTER;
 	}
-	
+
 	public void addPerson(String Epost, String Navn, String Passord) throws SQLException {
 		ArrayList<String> EPOSTER = getEposter();
 		if (EPOSTER.contains(Epost)){
@@ -34,12 +40,12 @@ public class Database {
 			db.updateQuery(sql);
 		}
 	}
-	
+
 	public void removePerson(String Epost) throws SQLException{
 		String sql = "delete from Ansatt where EPOST = '"+Epost+"';";
 		db.updateQuery(sql);
 	}
-	
+
 	public String getPassord(String EPOST) {
 		String PASSORD = null;
 		String sql = "select PASSORD from Ansatt where EPOST = '"+EPOST+"';";
@@ -53,7 +59,7 @@ public class Database {
 		}
 		return PASSORD;
 	}
-	
+
 	public ArrayList<String> getAlleNavn(){
 		ArrayList<String> NAVN = new ArrayList<String>();
 		String sql = "select NAVN from Ansatt;";
@@ -67,7 +73,7 @@ public class Database {
 		}
 		return NAVN;
 	}
-	
+
 	public String getNavn(String EPOST){
 		String Navn = null;
 		String sql = "select NAVN from Ansatt where EPOST = '"+EPOST+"';";
@@ -81,7 +87,7 @@ public class Database {
 		}
 		return Navn;
 	}
-	
+
 	public ArrayList<Integer> getAvtaler(){
 		ArrayList<Integer> AVTALER = new ArrayList<Integer>();
 		String sql = "select AVTALEID from Avtale";
@@ -95,7 +101,7 @@ public class Database {
 		}
 		return AVTALER;
 	}
-	
+
 	public String getVarighet(int AVTALEID) {
 		String sql1 = "select STARTTID from Avtale where AVTALEID = "+AVTALEID;
 		String sql2 = "select SLUTTTID from Avtale where AVTALEID = "+AVTALEID;
@@ -109,9 +115,9 @@ public class Database {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return "M¯te "+Integer.toString(AVTALEID)+" varer i "+varighet+"(TT:MM:SS)";
+		return "Møte "+Integer.toString(AVTALEID)+" varer i "+varighet+"(TT:MM:SS)";
 	}
-	
+
 	public String getMoterom(int AVTALEID){
 		String moterom = null;
 		String sql = "select MOTEROM from Avtale where AVTALEID =" +AVTALEID+ ";";
@@ -125,7 +131,7 @@ public class Database {
 		}
 		return moterom;
 	}
-	
+
 	public ArrayList<String> getMoteromListe(){
 		ArrayList<String> moteromListe = new ArrayList<String>();
 		String sql = "select ROMNAVN from Moterom;";
@@ -139,7 +145,7 @@ public class Database {
 		}
 		return moteromListe;
 	}
-	
+
 	public int getStorrelse(String moterom){
 		int storrelse = 0;
 		String sql = "select STORRELSE from Moterom where ROMANVN =" +moterom+ ";";
@@ -153,13 +159,26 @@ public class Database {
 		}
 		return storrelse;
 	}
-	
+
+	public String getMoteLeder(int ID){
+		return "yo";
+	}
+//LEGGE TIL SLUTT- OG STARTDATO OGSÅ??
 	public void addAvtale(String starttid, String slutttid, String beskrivelse, String sted, String moterom, String motesjef) {
-		//gj¯r om til Date
-		String sql = "insert into Avtale (STARTTID, SLUTTTID, BESKRIVELSE, STED, MOTEROM) values('"+starttid+"', '"+slutttid+"', '"+beskrivelse+"', '"+sted+"', '"+moterom+"', '"+motesjef+"') on duplicate key update AVTALEID = AVTALEID;";
+		//gjør om til Date
+		String sql = "insert into Avtale (STARTTID, SLUTTTID, BESKRIVELSE, STED, MOTEROM, MOTESJEF) values('"+starttid+"', '"+slutttid+"', '"+beskrivelse+"', '"+sted+"', '"+moterom+"', '"+motesjef+"');";
+		if (moterom == null && sted == null) {
+			sql = "insert into Avtale (STARTTID, SLUTTTID, BESKRIVELSE, STED, MOTEROM, MOTESJEF) values('"+starttid+"', '"+slutttid+"', '"+beskrivelse+"', "+"null"+", "+"null"+", '"+motesjef+"');";
+		} else if (moterom == null) {
+			sql = "insert into Avtale (STARTTID, SLUTTTID, BESKRIVELSE, STED, MOTEROM, MOTESJEF) values('"+starttid+"', '"+slutttid+"', '"+beskrivelse+"', '"+sted+"', "+"null"+", '"+motesjef+"');";
+		} else if (sted == null) {
+			sql = "insert into Avtale (STARTTID, SLUTTTID, BESKRIVELSE, STED, MOTEROM, MOTESJEF) values('"+starttid+"', '"+slutttid+"', '"+beskrivelse+"', "+"null"+", '"+moterom+"', '"+motesjef+"');";
+		} else {
+			System.out.println("Feil med addAvtale");
+		}
 		db.updateQuery(sql);
 	}
-	
+
 	public ArrayList<String> ledigeMoterom(int ID){
 		ArrayList<String> ledigeMoterom = new ArrayList<String>();
 		ArrayList<String> opptatteMoterom = new ArrayList<String>();
@@ -178,7 +197,7 @@ public class Database {
 		}
 		alleMoterom = this.getMoteromListe();
 		for (int i = 0; i<alleMoterom.size();i++){
-			
+
 			if (opptatteMoterom.contains(alleMoterom.get(i))){
 			} else {
 				ledigeMoterom.add(alleMoterom.get(i));
@@ -186,7 +205,7 @@ public class Database {
 		}
 		return ledigeMoterom;
 	}
-	
+
 	public String getStartTid(int ID){
 		String startTid = null;
 		String sql = "select STARTTID from Avtale where AVTALEID = "+ID+";";
@@ -213,6 +232,4 @@ public class Database {
 		}
 		return sluttTid;
 	}
-	
 }
-
