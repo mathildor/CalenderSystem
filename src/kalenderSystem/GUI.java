@@ -20,11 +20,24 @@ public class GUI {
 	public static void main(String[] args) {
 		GUI gui=new GUI();
 		//gui.help();
+		gui.startMenu();
 		if(gui.logIn()){
 			gui.run();
 		}
 	}
 
+	public void startMenu(){
+		System.out.println("1. Logg inn: ");
+		System.out.println("2. Oprett nye bruker: ");
+		Scanner scan=new Scanner(System.in);
+		int input=scan.nextInt();
+		switch(input){
+		case 1: this.logIn();
+		case 2: appointment.addUser();
+
+		}
+
+	}
 	public void run(){
 		System.out.println("YOU MADE IT!!!");
 		Scanner scan=new Scanner(System.in);
@@ -40,22 +53,22 @@ public class GUI {
 				appointment.showCalendar();
 				break;
 			}
-			
+
 			else if(input.equals("opprett")){
 				appointment.createAppointment(user);
 			}
-			
+
 			else if(input.equals("visBrukerKal")){
-				//showUserCalendar();
+				appointment.showUserCalendar();
 				break;
 			}
-			
+
 			else if(input.equals("varsel")){
-				//addAlarm();
+				appointment.addAlarm();
 				break;
 			}
-			else if(input.equals("slette")){
-				//deleteAppointment();
+			else if(input.equals("slette")){//TODO: && (user.EPOST==avtaleID.meetingLeader.epost)){
+				appointment.deleteAppointment();;
 				break;
 			}
 		}
@@ -115,37 +128,8 @@ public class GUI {
 		else
 			return false;
 	}
-
+	//TODO: trenger vi denne? eller skal vi bare avslutte alt istede for Œ logge ut?
 	public void loggUt(){
 		this.user = null;
 	}
-
-	public void opprettNyBruker() {
-
-	}
-
-	//	public void kommandoer(){
-	//		@SuppressWarnings("resource")
-	//		Scanner sc = new Scanner(System.in);
-	//		System.out.println("Hva vil du gjøre?");
-	//		System.out.println("1. Logg inn");
-	//		System.out.println("2. Opprett ny bruker");
-	//		System.out.println("3. Liste over gyldige kommandoer etter du er logget inn");
-	//		//føkk GIT
-	//		String input = sc.next();
-	//		switch (input) {
-	//			case "1": this.loggInn();
-	//				break;
-	//			case "2": this.opprettNyBruker();
-	//				break;
-	//			case "3": this.help();
-	//				break;
-	//			default: System.out.println("Dette er ikke en gyldig kommando");
-	//				this.kommandoer();
-	//				break;
-	//		}
-	//	}
-	//	
-
-
 }

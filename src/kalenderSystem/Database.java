@@ -13,10 +13,15 @@ public class Database {
 	public Database(){
 		db = new DBConnection();
 	}
+	
+	//TODO: 
 	public ArrayList<String> getParticipants(){
-		return
+		
 	}
-
+	public void deleteAppointment(){
+		
+	}
+	
 	public ArrayList<String> getEposter() {
 		ArrayList<String> EPOSTER = new ArrayList<String>();
 		String sql = "select EPOST from Ansatt;";

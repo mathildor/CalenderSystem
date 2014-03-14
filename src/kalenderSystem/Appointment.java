@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -24,8 +25,6 @@ public class Appointment {
 	Ansatt user;
 	int avtaleID = 0;
 
-
-	//Ansatt ansatt=new Ansatt(EPOST);
 
 
 	public static void main(String[] args) {
@@ -283,13 +282,77 @@ public class Appointment {
 		ArrayList<String>participants=db.getParticipants();
 		for(int avtale : avtaler){
 			if(participants.contains(user.EPOST)){
-				System.out.println(avtale);
+				System.out.println(avtale); //TODO: print calendar istede
 			}
 		}
 		avtaleID = scan.nextInt();
+	}
+
+	public void showUserCalendar(){
+		Scanner scan=new Scanner(System.in);
+		boolean check=false;
+		while(!check){
+			System.out.println("Skriv inn eposten til brukeren du vil se kalendere til: ");
+			String userEmail=scan.nextLine();
+			if(db.getEposter().contains(userEmail)){
+				check=true;
+				ArrayList<Integer>avtaler=db.getAvtaler();
+				ArrayList<String>participants=db.getParticipants();
+				for(int avtale : avtaler){
+					if(participants.contains(userEmail)){
+						System.out.println(avtale);//TODO: print calendar istede
+					}
+				}
+			}
+			else
+				check=false;
+		}
+	}
+
+
+	public void addAlarm(){
+		//Skal kunne legge til alarm til alle avtaler som bruker er med på
+		//Må sjekke om bruker er participant
+		// lager så alarm ved å sende mail?? få opp beskjedi kalender? hmmm.. dånåå
 
 	}
 
-	//TODO: lage metodene i run i GUI?
+	public void sendAlarm(){
+		//Skal sende alarm til alle deltakere om at møtet er eksempel slettet. Sjekk krav for hva mer
+	}
 
+
+	public void deleteAppointment(){
+		db.deleteAppointment(int avtaleID);
+
+	}
+
+	public void addUser(){
+		boolean check=false;
+
+		while(!check){
+			Scanner scan=new Scanner(System.in);
+			System.out.println("Skriv inn din epost: ");
+			String email=scan.nextLine();
+			System.out.println("Skriv inn passord: ");
+			String password=scan.nextLine();
+			System.out.println("Skriv inn ditt navn: ");
+			String name=scan.nextLine();
+
+			try {
+				db.addPerson(email, name, password);
+				check=true;
+			} catch (SQLException e) {
+				check=false;
+				e.printStackTrace();
+			}
+		}
+	}
 }
+
+//TODO: lage metodene i run i GUI?
+//Legge til andre i avtale
+//slette brukere
+//
+
+
