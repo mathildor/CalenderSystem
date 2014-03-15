@@ -169,7 +169,7 @@ public class Appointment {
 			place= scan.nextLine(); 
 		}
 		System.out.println("Sted ble endret");
-		//TODO: Endre avtalen som skal endres utifra avtaleID, så må lage en database-metode som heter endre avtale
+		//TODO: Må endre avtalen som skal endres utifra avtaleID, så må lage en database-metode som heter endre avtale
 	}
 
 
@@ -201,12 +201,13 @@ public class Appointment {
 
 
 		this.checkDate=false;
-
 		while(checkDate==false){
 			System.out.println("Angi slutt-tid i TT:MM ");
 			this.endTime=scan.nextLine();
 			testInputDate("HH:MM", endTime);
+			
 		}
+
 
 		this.checkDate=false;
 		while(checkDate==false){
