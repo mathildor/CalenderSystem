@@ -24,6 +24,7 @@ public class Appointment {
 	Database db;
 	Ansatt user;
 	int avtaleID = 0;
+	int diffYear, diffMonth, diffDay;
 
 
 
@@ -174,22 +175,14 @@ public class Appointment {
 
 
 	//METODE FOR Å OPPRETTE AVTALER
-	//TODO:SIKRE SLUTT SENERE ENN START HVIS NOK TID
 	//Nederst kaller den på addAppointment i db-klassen så avtalen blir lagret i databasen
 
-	public void createAppointment(Ansatt user){
-		//meetingLeader=ansatt.EPOST;
-		meetingLeader= user.EPOST;
+	public void createAppointment(){//Ansatt user){
+		
+		//meetingLeader= user.EPOST;
 		Scanner scan = new Scanner(System.in);
 
-
-		this.checkDate=false;
-
-		while(checkDate==false){
-			System.out.println("Angi starttid i TT:MM ");
-			this.startTime=scan.nextLine();
-			testInputDate("HH:MM", startTime);
-		}
+		//HENTER STARTDATO FRA BRUKER
 		this.checkDate=false;
 
 		while(checkDate==false){
@@ -197,53 +190,134 @@ public class Appointment {
 			this.startDate=scan.nextLine();
 			testInputDate("yyyy-MM-dd", startDate);
 		}
+
+		String startYear=startDate.substring(0,4);
+		String startMonth=startDate.substring(5,7);
+		String startDay=startDate.substring(8,10);
+
+		int startYearInt=Integer.parseInt(startYear);
+		int startMonthInt=Integer.parseInt(startMonth);
+		int startDayInt=Integer.parseInt(startDay);
+
+
+		//HENTER STARTTID FRA BRUKER 
+		this.checkDate=false;
+
+		while(checkDate==false){
+			System.out.println("Angi starttid i TT:MM ");
+			this.startTime=scan.nextLine();
+			testInputDate("HH:MM", startTime);
+		}
+
+		String startTimeValue = startTime.substring(0, 2) + startTime.substring(3,5);
+		int startTimeInt=Integer.parseInt(startTimeValue);
+
+
+		//HENTER SLUTTDATO FRA BRUKER
+		this.checkDate=false;
+		while(checkDate==false){
+			System.out.println("Angi sluttdato i YYYY-MM-DD: ");
+			this.endDate=scan.nextLine();
+			testInputDate("yyyy-MM-dd", endDate);
+
+			if(checkDate==false){
+				continue;
+			}
+			String endYear=endDate.substring(0,4);
+			String endMonth=endDate.substring(5,7);
+			String endDay=endDate.substring(8,10);
+
+			int endYearInt=Integer.parseInt(endYear);
+			int endMonthInt=Integer.parseInt(endMonth);
+			int endDayInt=Integer.parseInt(endDay);
+
+
+			//SIKRER AT SLUTTDATO ER SENERE ENN STARTDATO:
+			if(endYearInt<startYearInt){
+				System.out.println("Sluttdato må være senere enn startdato");
+				checkDate=false;
+				continue;
+			}
+
+			if(endMonthInt<startMonthInt){
+				System.out.println("Sluttdato må være senere enn startdato");
+				checkDate=false;
+				continue;
+			}
+			if(endDayInt<startDayInt){
+				System.out.println("Sluttdato må være senere enn startdato");
+				checkDate=false;
+				continue;
+			}
+
+			diffYear=endYearInt-startYearInt;
+			diffMonth=endMonthInt-startMonthInt;
+			diffDay=endDayInt-startDayInt;
+		}
+
+		
 		Date startDateAndTime= parseDate("HH:mm yyyy-MM-dd", startTime+" "+startDate);
 
 
+		//HENTER SLUTT-TID FRA BRUKER
 		this.checkDate=false;
-
 		while(checkDate==false){
 			System.out.println("Angi slutt-tid i TT:MM ");
 			this.endTime=scan.nextLine();
 			testInputDate("HH:MM", endTime);
+
+			String endTimeValue=endTime.substring(0,2) + endTime.substring(3,5);
+			int endTimeInt=Integer.parseInt(endTimeValue);
+
+			if(!(diffYear==0)&&(!(diffMonth==0))&&(!(diffYear==0))){
+				if(!(endTimeInt>startTimeInt)){
+					System.out.println("Skriv inn tidspunkt som er senere enn start-tidspunkt");
+					checkDate=false;
+					break;
+
+				}	
+			}
 		}
+			Date endDateAndTime= parseDate("HH:mm yyyy-MM-dd", endTime+" "+endDate);
 
-		this.checkDate=false;
-		while(checkDate==false){
-			System.out.println("Angi slutt dato i YYYY-MM-DD: ");
-			this.endDate=scan.nextLine();
-			testInputDate("yyyy-MM-dd", endDate);
+
+			//HENTER UT UKENUMMER
+			Calendar cal=Calendar.getInstance();
+			cal.setTime(startDateAndTime);
+			this.week = cal.get(Calendar.WEEK_OF_YEAR);
+
+			System.out.println(startDateAndTime +", uke: "+week);
+			System.out.println(endDateAndTime);
+
+			//HENTER BESKRIVELSE FRA BRUKER
+			System.out.println("Angi beskrivelse for avtalen i en linje: ");
+			description+=scan.nextLine();
+
+			//HENTER STED FOR MØTET FRA BRUKER
+			System.out.println("Angi sted for møtet: ");
+			place=scan.nextLine();
+
+			//HENTER MØTEROM FOR AVTALE FRA BRRUKER
+			System.out.println("Angi møterom du ønsker fra denne lista: ");
+			//print liste over ledige møterom
+			ArrayList<String>meetingRoomList= db.getMoteromListe();
+			System.out.println(meetingRoomList);
+			this.meetingRoom=scan.nextLine();
+
+			//TODO: SJEKK OM RIKTIG FORMAT I INPUT
+
+			//LEGGER TIL AVTALE I DATABASEN
+			//db.addAvtale(startTime+":00", endTime+":00", description, place, meetingRoom, meetingLeader);
+
 		}
+	
+	
 
 
-		Date endDateAndTime= parseDate("HH:mm yyyy-MM-dd", endTime+" "+endDate);
-		Calendar cal=Calendar.getInstance();
-		cal.setTime(startDateAndTime);
-		this.week = cal.get(Calendar.WEEK_OF_YEAR);
-
-		System.out.println(startDateAndTime +", uke: "+week);
-		System.out.println(endDateAndTime);
-
-
-		System.out.println("Angi beskrivelse for avtalen i en linje: ");
-		description+=scan.nextLine();
-
-		System.out.println("Angi sted for møtet: ");
-		place=scan.nextLine();
-
-		System.out.println("Angi møterom du ønsker fra denne lista: ");
-		//print liste over ledige møterom
-		ArrayList<String>meetingRoomList= db.getMoteromListe();
-		System.out.println(meetingRoomList);
-		this.meetingRoom=scan.nextLine();
-
-		//TODO: SJEKK OM RIKTIG FORMAT I INPUT
-
-		db.addAvtale(startTime+":00", endTime+":00", description, place, meetingRoom, meetingLeader);
-
-	}
-
+	//METODE FOR Å SIKRE RIKTIG TYPE INPUT FRA BRUKER
 	public void testInputDate(String format, String strDate){
+		
+		//strDate=endDate,startDate osv..
 
 		SimpleDateFormat dateFormater = new SimpleDateFormat (format);
 
@@ -289,7 +363,7 @@ public class Appointment {
 	}
 
 	public void showUserCalendar(){
-		Scanner scan=new Scanner(System.in);
+		Scanner scan=new Scanner(System.in); 
 		boolean check=false;
 		while(!check){
 			System.out.println("Skriv inn eposten til brukeren du vil se kalendere til: ");
@@ -322,10 +396,10 @@ public class Appointment {
 	}
 
 
-	public void deleteAppointment(){
-		db.deleteAppointment(int avtaleID);
-
-	}
+//	public void deleteAppointment(){
+//		db.deleteAppointment(int avtaleID);
+//
+//	}
 
 	public void addUser(){
 		boolean check=false;
@@ -351,8 +425,8 @@ public class Appointment {
 }
 
 //TODO: lage metodene i run i GUI?
-//Legge til andre i avtale
-//slette brukere
-//
+//TODO:Legge til andre i avtale
+//TODO: slette brukere
+
 
 
